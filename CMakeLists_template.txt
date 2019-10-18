@@ -55,4 +55,4 @@ add_custom_command(TARGET $${PROJECT_NAME}.elf POST_BUILD
         COMMENT "Building $${HEX_FILE}
 Building $${BIN_FILE}")
 
-add_custom_target(build_and_flash cd ${CMAKE_BINARY_DIR} && make && st-flash write *.bin 0x8000000)
+add_custom_target(build_and_flash cd ${CMAKE_BINARY_DIR} && make && st-flash write $${PROJECT_NAME}.bin 0x8000000)

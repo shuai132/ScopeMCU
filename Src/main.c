@@ -117,7 +117,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    LOGI("adc: %d, %d, %d, %d", ADCValue[0], ADCValue[1], ADCValue[2], ADCValue[3]);
+    LOGI("adc: %u, %u, %u, %u", ADCValue[0], ADCValue[1], ADCValue[2], ADCValue[3]);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     HAL_Delay(1000);
 
