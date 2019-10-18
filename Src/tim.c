@@ -96,13 +96,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 } 
 
 /* USER CODE BEGIN 1 */
-// 不是所有频率都能支持的
-void TIM3_ConfigFrequency(uint32_t frequency)
-{
-    assert_param(frequency < 1000000ul && (1000000ul / frequency - 1) < 0xFFFF);
-    htim3.Init.Period = (uint16_t)(1000000ul / frequency - 1);
-    HAL_TIM_Base_Init(&htim3);
-}
+
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

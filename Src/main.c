@@ -29,6 +29,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "log.h"
+#include "app.h"
 
 /* USER CODE END Includes */
 
@@ -49,10 +50,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
-// ADC值 三个采集通道加一个校准通道 由DMA更改
-#define CHANNEL_NUL 4
-volatile uint16_t ADCValue[CHANNEL_NUL];
 
 /* USER CODE END PV */
 
@@ -101,15 +98,7 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-  LOGI("main running...");
-
-  TIM3_ConfigFrequency(1000);
-  if (HAL_TIM_Base_Start_IT(&htim3) != HAL_OK) {
-    FATAL("HAL_TIM_Base_Start error");
-  }
-  if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCValue, CHANNEL_NUL) != HAL_OK) {
-    FATAL("HAL_ADC_Start_DMA error");
-  }
+  setup();
 
   /* USER CODE END 2 */
 
@@ -117,10 +106,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    LOGI("adc: %u, %u, %u, %u", ADCValue[0], ADCValue[1], ADCValue[2], ADCValue[3]);
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    HAL_Delay(1000);
-
+    loop();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -174,14 +160,6 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-  //LOGD("HAL_ADC_ConvCpltCallback");
-}
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  //LOGD("HAL_TIM_PeriodElapsedCallback");
-}
 /* USER CODE END 4 */
 
 /**

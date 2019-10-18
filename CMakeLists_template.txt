@@ -43,6 +43,10 @@ include_directories(${includes})
 
 add_executable($${PROJECT_NAME}.elf $${SOURCES} $${LINKER_SCRIPT})
 
+# custom cmake
+add_subdirectory(App)
+target_link_libraries(${PROJECT_NAME}.elf app)
+
 set(CMAKE_EXE_LINKER_FLAGS
     "$${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=$${PROJECT_BINARY_DIR}/$${PROJECT_NAME}.map")
 
@@ -54,5 +58,3 @@ add_custom_command(TARGET $${PROJECT_NAME}.elf POST_BUILD
         COMMAND $${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:$${PROJECT_NAME}.elf> $${BIN_FILE}
         COMMENT "Building $${HEX_FILE}
 Building $${BIN_FILE}")
-
-add_custom_target(build_and_flash cd ${CMAKE_BINARY_DIR} && make && st-flash write $${PROJECT_NAME}.bin 0x8000000)

@@ -40,8 +40,6 @@ void MX_TIM3_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
-void TIM3_ConfigFrequency(uint32_t frequency);
-
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

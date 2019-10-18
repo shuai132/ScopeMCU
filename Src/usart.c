@@ -103,22 +103,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 } 
 
 /* USER CODE BEGIN 1 */
-#include <stdio.h>
-/**
- * 重定向c库函数printf
- */
-// for keil
-int fputc(int ch, FILE *f)
-{
-    HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
-    return (ch);
-}
-// for gnu
-int _write(int fd, char *pBuffer, int size)
-{
-    HAL_UART_Transmit(&huart1, pBuffer, size, 0xff);
-    return size;
-}
+
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
