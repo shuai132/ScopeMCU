@@ -19,16 +19,8 @@ brew install stlink
 brew cask install gcc-arm-embedded
 ```
 
-* add environment variable
-```bash
-PATH=$PATH:~/Library/STM32/gcc-arm-none-eabi-8-2018-q4-major/bin
-```
-
-## Write to flash
-
-```bash
-st-flash write *.bin 0x8000000
-```
+## Usage
+* [blog](https://blog.csdn.net/u012456479/article/details/101543344)
 
 ## Links
 
