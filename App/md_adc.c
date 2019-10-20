@@ -5,6 +5,10 @@
 
 volatile uint16_t ADCValue[CHANNEL_NUL];
 
+/**
+ * 当前ADC时钟12M 通道4个 采样时间239.5个时钟
+ * 所以每组采样频率最快为: 12.5kHz (12000 / 4 / 239.5)
+ */
 void adcInit(void) {
     const int ChannelNum = 4;
 
