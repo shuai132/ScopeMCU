@@ -35,6 +35,16 @@ void adcInit(void) {
     }
 }
 
+/**
+ * STM32F0每颗芯片有个基于某个电压及温度下的精确测定值: VREFINT_CAL
+ * STM32F1里同样有内部基准电压，但它没有像F0一样每颗芯片有个精确测定值。
+ * 其电压范围在1.16-1.26间，一般取1.2V。
+ */
+uint16_t getVolmV(int ch) {
+    assert_param(0 <= ch && ch < CHANNEL_NUL);
+    return 1200 * ADCValue[ch] / ADCValue[3];
+}
+
 /****************** weak callback ******************/
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {

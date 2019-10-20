@@ -7,3 +7,5 @@
 extern volatile uint16_t ADCValue[CHANNEL_NUL];
 
 void adcInit(void);
+
+uint16_t getVolmV(int ch);
