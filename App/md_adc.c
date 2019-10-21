@@ -3,22 +3,16 @@
 #include "md_adc.h"
 #include "log.h"
 
-volatile uint16_t ADCValue[CHANNEL_NUL];
+volatile uint16_t ADCValue[CHANNEL_NUM];
 
-/**
- * 当前ADC时钟12M 通道4个 采样时间239.5个时钟
- * 所以每组采样频率最快为: 12.5kHz (12000 / 4 / 239.5)
- */
 void adcInit(void) {
-    const int ChannelNum = 4;
-
     // 自动校准
     if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK) {
         FATAL();
     }
 
     // start adc dma
-    if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCValue, ChannelNum) != HAL_OK) {
+    if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCValue, CHANNEL_NUM) != HAL_OK) {
         FATAL();
     }
 
@@ -41,8 +35,8 @@ void adcInit(void) {
  * 其电压范围在1.16-1.26间，一般取1.2V。
  */
 uint16_t getVolmV(int ch) {
-    assert_param(0 <= ch && ch < CHANNEL_NUL);
-    return 1200 * ADCValue[ch] / ADCValue[3];
+    assert_param(0 <= ch && ch < CHANNEL_NUM);
+    return 1200 * ADCValue[ch] / ADCValue[CHANNEL_NUM - 1];
 }
 
 /****************** weak callback ******************/

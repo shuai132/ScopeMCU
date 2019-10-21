@@ -3,9 +3,11 @@
 #include "log.h"
 #include "md_adc.h"
 
+void init(void) {
+}
+
 void setup(void) {
     LOGD("setup...");
-
     adcInit();
 }
 
