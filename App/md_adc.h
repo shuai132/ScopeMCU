@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "PortableMCU.h"
+#include "Scope.h"
 
 #define CHANNEL_NUM 2
 
@@ -10,8 +10,6 @@ extern volatile uint16_t ADCValue[CHANNEL_NUM];
 
 void adcInit();
 
-void adcSetFrequency(uint32_t frequency);
-
-void adcSetSampleNum(uint32_t sampleNum);
+uint32_t adcSetFrequency(uint32_t frequency);
 
 uint16_t getVolmV(int ch);

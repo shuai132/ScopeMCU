@@ -3,7 +3,7 @@
 #include <cmath>
 #include "md_adc.h"
 #include "log.h"
-#include "PortableMCU.h"
+#include "Scope.h"
 
 volatile uint16_t ADCValue[CHANNEL_NUM];
 
@@ -31,7 +31,7 @@ void adcInit() {
     }
 }
 
-void adcSetFrequency(uint32_t frequency) {
+uint32_t adcSetFrequency(uint32_t frequency) {
     const int SYS_MHZ = 72;
     const uint32_t CLOCKS = SYS_MHZ * 1000000;
     uint32_t period = CLOCKS / frequency;
@@ -57,13 +57,7 @@ void adcSetFrequency(uint32_t frequency) {
     htim3.Init.Prescaler = p1 - 1;
     htim3.Init.Period    = p2 - 1;
 
-    using namespace G;
-    message.sampleFs = CLOCKS / (p1 * p2);
-}
-
-void adcSetSampleNum(uint32_t sampleNum) {
-    using namespace G;
-    message.sampleNum = sampleNum;
+    return CLOCKS / (p1 * p2);
 }
 
 /**
@@ -79,14 +73,5 @@ uint16_t getVolmV(int ch) {
 /****************** weak callback ******************/
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    using namespace G;
-
-    if (sampleOk) return;
-
-    message.sampleCh1[samplePos] = getVolmV(0);
-    if (++samplePos == message.sampleNum) {
-        HAL_TIM_Base_Stop_IT(&htim3);
-        samplePos = 0;
-        sampleOk = true;
-    }
+    Scope::getInstance().add(getVolmV(0));
 }
