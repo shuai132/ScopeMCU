@@ -1,7 +1,9 @@
 #include <adc.h>
 #include <tim.h>
+#include <cmath>
 #include "md_adc.h"
 #include "log.h"
+#include "PortableMCU.h"
 
 volatile uint16_t ADCValue[CHANNEL_NUM];
 
@@ -16,9 +18,9 @@ void adcInit() {
         FATAL();
     }
 
-    // 设置采样频率: 1kHz
-    htim3.Init.Prescaler = 72 - 1;
-    htim3.Init.Period = 1000 - 1;
+    // 初始采样频率: 10kHz
+    adcSetFrequency(10000);
+
     if (HAL_TIM_Base_Init(&htim3) != HAL_OK) {
         FATAL();
     }
@@ -27,6 +29,41 @@ void adcInit() {
     if (HAL_TIM_Base_Start_IT(&htim3) != HAL_OK) {
         FATAL();
     }
+}
+
+void adcSetFrequency(uint32_t frequency) {
+    const int SYS_MHZ = 72;
+    const uint32_t CLOCKS = SYS_MHZ * 1000000;
+    uint32_t period = CLOCKS / frequency;
+
+    uint16_t p1 = 0;
+    uint16_t p2 = 0;
+    {
+        uint16_t pm = sqrt(period);
+        do {
+            if (pm == 1) {
+                p1 = 72;
+                p2 = 1000000 / frequency;
+                break;
+            }
+            if (period % pm == 0) {
+                p1 = pm;
+                if (p1 * SYS_MHZ > 0xFFFF) continue;
+                p2 = period / pm;
+                break;
+            }
+        } while (--pm);
+    }
+    htim3.Init.Prescaler = p1 - 1;
+    htim3.Init.Period    = p2 - 1;
+
+    using namespace G;
+    message.sampleFs = CLOCKS / (p1 * p2);
+}
+
+void adcSetSampleNum(uint32_t sampleNum) {
+    using namespace G;
+    message.sampleNum = sampleNum;
 }
 
 /**
@@ -42,10 +79,14 @@ uint16_t getVolmV(int ch) {
 /****************** weak callback ******************/
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    //LOGD("HAL_ADC_ConvCpltCallback");
-}
+    using namespace G;
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    //LOGD("HAL_TIM_PeriodElapsedCallback");
+    if (sampleOk) return;
+
+    message.sampleCh1[samplePos] = getVolmV(0);
+    if (++samplePos == message.sampleNum) {
+        HAL_TIM_Base_Stop_IT(&htim3);
+        samplePos = 0;
+        sampleOk = true;
+    }
 }
