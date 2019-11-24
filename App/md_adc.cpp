@@ -5,7 +5,7 @@
 
 volatile uint16_t ADCValue[CHANNEL_NUM];
 
-void adcInit(void) {
+void adcInit() {
     // 自动校准
     if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK) {
         FATAL();
