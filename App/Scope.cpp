@@ -33,8 +33,9 @@ void Scope::setMcuImpl(MCU mcu) {
 
 void Scope::onSampleFinish() {
     static PacketProcessor processor(false);
-    auto p = processor.pack((const uint8_t*) &message_, sizeof(message_));
-    mcu_.sendData(p.data(), p.size());
+    processor.packForeach((uint8_t*)&message_, sizeof(message_), [this](uint8_t* data, size_t size) {
+        mcu_.sendData(data, size);
+    });
     if (triggerMode_ == TriggerMode::ALWAYS) {
         mcu_.startSample();
     }
