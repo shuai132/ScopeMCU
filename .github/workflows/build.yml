@@ -1,0 +1,27 @@
+name: build
+
+on: [push]
+
+jobs:
+  Linux:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: submodule
+        run: git submodule update --init --recursive
+
+      - name: Install Dependencies
+        run: sudo apt-get install gcc-arm-none-eabi
+
+      - name: Upgrade cmake to 3.15.5
+        run: |
+          wget https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5-Linux-x86_64.tar.gz
+          tar zxf cmake-3.15.5-Linux-x86_64.tar.gz
+          sudo mv cmake-3.15.5-Linux-x86_64 /opt/cmake-3.15.5
+          sudo ln -sf /opt/cmake-3.15.5/bin/* /usr/local/bin/
+
+      - name: cmake build
+        run: mkdir build && cd build && cmake .. && make

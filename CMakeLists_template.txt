@@ -1,7 +1,7 @@
 #${templateWarning}
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_VERSION 1)
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.15)
 
 # specify cross compilers and tools
 SET(CMAKE_C_COMPILER_WORKS 1)

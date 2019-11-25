@@ -1,5 +1,7 @@
 # Scope
 
+[![Build Status](https://github.com/shuai132/scope_mcu/workflows/build/badge.svg)](https://github.com/shuai132/scope_mcu/actions?workflow=build)
+
 MCU: STM32F103C8Tx
 
 ## Introduction
