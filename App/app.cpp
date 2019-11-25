@@ -19,6 +19,9 @@ void setup(void) {
     adcInit();
     pwmInit();
 
+    static uint8_t data;
+    HAL_UART_Receive_IT(&huart1, &data, 1);
+
     auto& scope = Scope::getInstance();
     scope.updateVolMax(3300);
     scope.setMcuImpl(
@@ -46,4 +49,9 @@ void setup(void) {
 
 void loop(void) {
     HAL_Delay(100);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    uint8_t data = huart->Instance->DR;
+    Scope::getInstance().onRead(&data, 1);
 }
