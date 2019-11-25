@@ -39,7 +39,7 @@
               							
               <option id="fr.ac6.managedbuild.option.gnu.cross.mcu.673448736" name="Mcu" superClass="fr.ac6.managedbuild.option.gnu.cross.mcu" value="STM32F103C8Tx" valueType="string" />
               							
-              <option id="fr.ac6.managedbuild.option.gnu.cross.board.928315812" name="Board" superClass="fr.ac6.managedbuild.option.gnu.cross.board" value="STM32_TIMER_ADC" valueType="string" />
+              <option id="fr.ac6.managedbuild.option.gnu.cross.board.928315812" name="Board" superClass="fr.ac6.managedbuild.option.gnu.cross.board" value="scope_mcu" valueType="string" />
               							
               <option id="fr.ac6.managedbuild.option.gnu.cross.core.1083960614" name="Core" superClass="fr.ac6.managedbuild.option.gnu.cross.core" valueType="stringList">
                 								
@@ -240,7 +240,7 @@
               							
               <option id="fr.ac6.managedbuild.option.gnu.cross.mcu.673448736" name="Mcu" superClass="fr.ac6.managedbuild.option.gnu.cross.mcu" value="STM32F103C8Tx" valueType="string" />
               							
-              <option id="fr.ac6.managedbuild.option.gnu.cross.board.928315812" name="Board" superClass="fr.ac6.managedbuild.option.gnu.cross.board" value="STM32_TIMER_ADC" valueType="string" />
+              <option id="fr.ac6.managedbuild.option.gnu.cross.board.928315812" name="Board" superClass="fr.ac6.managedbuild.option.gnu.cross.board" value="scope_mcu" valueType="string" />
               							
               <option id="fr.ac6.managedbuild.option.gnu.cross.core.1083960614" name="Core" superClass="fr.ac6.managedbuild.option.gnu.cross.core" valueType="stringList">
                 								
@@ -431,7 +431,7 @@
     		
     <configuration artifactName="${ProjName}" configurationName="Debug">
       			
-      <resource resourceType="PROJECT" workspacePath="STM32_TIMER_ADC" />
+      <resource resourceType="PROJECT" workspacePath="scope_mcu" />
       		
     </configuration>
     	

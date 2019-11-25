@@ -52,16 +52,14 @@ public:
      */
     void onRead(uint8_t* data, size_t size);
 
+    const Message& getMessage();
+
 private:
     void onSampleFinish();
 
     void updateFs(uint32_t fs);
 
     void updateSampleNum(uint32_t num);
-
-    const Message& getMessage() {
-        return message_;
-    }
 
 private:
     PacketProcessor processor_;

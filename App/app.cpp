@@ -33,6 +33,10 @@ void setup(void) {
                     .stopSample = []{
                         HAL_TIM_Base_Stop(&htim3);
                         setLed(false);
+#if 0
+                        auto& message = Scope::getInstance().getMessage();
+                        LOG("ch1: %d", message.sampleCh1[0]);
+#endif
                     },
                     .setSampleFs = [](uint32_t fs) {
                         return adcSetFrequency(fs);
@@ -41,9 +45,5 @@ void setup(void) {
 }
 
 void loop(void) {
-    HAL_Delay(1000);
-#if 0
-    auto& message = Scope::getInstance().getMessage();
-    LOG("ch1: %d", message.sampleCh1[0]);
-#endif
+    HAL_Delay(100);
 }

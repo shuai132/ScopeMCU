@@ -37,22 +37,22 @@ void Scope::add(uint16_t volmV) {
     }
 }
 
-void Scope::updateVolMax(uint32_t volMaxmV) {
-    message_.volMaxmV = volMaxmV;
-}
-
-void Scope::updateFs(uint32_t fs) {
-    message_.sampleFs = fs;
-}
-
-void Scope::updateSampleNum(uint32_t num) {
-    message_.sampleNum = num;
-}
-
 void Scope::setMcuImpl(MCU mcu) {
     mcu_ = std::move(mcu);
     mcu_.setSampleFs(10000);
     mcu_.startSample();
+}
+
+void Scope::updateVolMax(uint32_t volMaxmV) {
+    message_.volMaxmV = volMaxmV;
+}
+
+void Scope::onRead(uint8_t* data, size_t size) {
+    processor_.feed(data, size);
+}
+
+const Message& Scope::getMessage() {
+    return message_;
 }
 
 void Scope::onSampleFinish() {
@@ -64,6 +64,10 @@ void Scope::onSampleFinish() {
     }
 }
 
-void Scope::onRead(uint8_t* data, size_t size) {
-    processor_.feed(data, size);
+void Scope::updateFs(uint32_t fs) {
+    message_.sampleFs = fs;
+}
+
+void Scope::updateSampleNum(uint32_t num) {
+    message_.sampleNum = num;
 }
