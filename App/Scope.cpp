@@ -1,7 +1,27 @@
 #include "Scope.h"
-#include "PacketProcessor.h"
 
-Scope::Scope() = default;
+Scope::Scope()
+    : processor_(false) {
+    processor_.setOnPacketHandle([this](const std::string& payload) {
+        Cmd* cmd = (Cmd*)payload.data();
+        switch (cmd->type) {
+            case Cmd::Type::NONE:
+                break;
+            case Cmd::Type::SET_SAMPLE_FS:
+                mcu_.setSampleFs(cmd->data);
+                break;
+            case Cmd::Type::SET_SAMPLE_NUM:
+                updateSampleNum(cmd->data);
+                break;
+            case Cmd::Type::SET_TRIGGER_MODE:
+                triggerMode_ = static_cast<TriggerMode>(cmd->data);
+                break;
+            case Cmd::Type::TRIGGER_SAMPLE:
+                mcu_.startSample();
+                break;
+        }
+    });
+}
 
 Scope& Scope::getInstance() {
     static Scope instance;
@@ -15,6 +35,10 @@ void Scope::add(uint16_t volmV) {
         samplePos_ = 0;
         onSampleFinish();
     }
+}
+
+void Scope::updateVolMax(uint32_t volMaxmV) {
+    message_.volMaxmV = volMaxmV;
 }
 
 void Scope::updateFs(uint32_t fs) {
@@ -32,11 +56,14 @@ void Scope::setMcuImpl(MCU mcu) {
 }
 
 void Scope::onSampleFinish() {
-    static PacketProcessor processor(false);
-    processor.packForeach((uint8_t*)&message_, sizeof(message_), [this](uint8_t* data, size_t size) {
+    processor_.packForeach((uint8_t*)&message_, sizeof(message_), [this](uint8_t* data, size_t size) {
         mcu_.sendData(data, size);
     });
     if (triggerMode_ == TriggerMode::ALWAYS) {
         mcu_.startSample();
     }
+}
+
+void Scope::onRead(uint8_t* data, size_t size) {
+    processor_.feed(data, size);
 }

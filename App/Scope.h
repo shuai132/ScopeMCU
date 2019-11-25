@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "Portable.h"
+#include "PacketProcessor.h"
 
 class Scope {
     struct MCU {
@@ -35,9 +36,9 @@ public:
 
     void add(uint16_t volmV);
 
-    const Message& getMessage() {
-        return message_;
-    }
+    void updateVolMax(uint32_t volMaxmV);
+
+    void onRead(uint8_t* data, size_t size);
 
 private:
     void onSampleFinish();
@@ -46,7 +47,13 @@ private:
 
     void updateSampleNum(uint32_t num);
 
+    const Message& getMessage() {
+        return message_;
+    }
+
 private:
+    PacketProcessor processor_;
+
     Message message_;
 
     uint16_t samplePos_ = 0;

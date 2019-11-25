@@ -19,7 +19,9 @@ void setup(void) {
     adcInit();
     pwmInit();
 
-    Scope::getInstance().setMcuImpl(
+    auto& scope = Scope::getInstance();
+    scope.updateVolMax(3300);
+    scope.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
                         HAL_UART_Transmit(&huart1, data, size, 0xFFFF);
