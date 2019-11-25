@@ -22,6 +22,15 @@ struct Cmd  {
         SET_TRIGGER_MODE,   // data: mode
         TRIGGER_SAMPLE,     // no data
     };
+
+    enum class TriggerMode {
+        ALWAYS = 0,
+        UP,
+        DOWN,
+        AUTO,
+        HAND,
+    };
+
     Type type = Type::NONE;
     uint32_t data{};
 };

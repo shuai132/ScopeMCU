@@ -8,10 +8,10 @@ Scope::Scope()
             case Cmd::Type::NONE:
                 break;
             case Cmd::Type::SET_SAMPLE_FS:
-                mcu_.setSampleFs(cmd->data);
+                updateFs(mcu_.setSampleFs(cmd->data));
                 break;
             case Cmd::Type::SET_SAMPLE_NUM:
-                updateSampleNum(cmd->data);
+                updateSampleNum(cmd->data > SAMPLE_NUM_MAX ? SAMPLE_NUM_MAX : cmd->data);
                 break;
             case Cmd::Type::SET_TRIGGER_MODE:
                 triggerMode_ = static_cast<TriggerMode>(cmd->data);
