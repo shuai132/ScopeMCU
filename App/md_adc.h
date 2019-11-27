@@ -9,6 +9,10 @@ extern volatile uint16_t ADCValue[CHANNEL_NUM];
 
 void adc_init();
 
+void adc_start();
+
+void adc_stop();
+
 uint32_t adc_setFrequency(uint32_t frequency);
 
 uint16_t adc_getVolmV(int ch);

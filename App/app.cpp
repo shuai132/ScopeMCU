@@ -1,6 +1,5 @@
 #include "app.h"
 #include "usart.h"
-#include "tim.h"
 #include "md_adc.h"
 #include "md_pwm.h"
 #include "md_led.h"
@@ -19,26 +18,19 @@ void setup(void) {
     HAL_UART_Receive_IT(&huart1, &data, 1);
 
     auto& scope = Scope::getInstance();
-    scope.updateVolMax(3300);
+    scope.setVolMax(3300);
     scope.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
                         HAL_UART_Transmit(&huart1, data, size, 0xFFFF);
                     },
-                    .startSample = []{
-                        HAL_TIM_Base_Start(&htim3);
-                        led_setValue(true);
-                    },
-                    .stopSample = []{
-                        HAL_TIM_Base_Stop(&htim3);
-                        led_setValue(false);
-#if 0
-                        auto& message = Scope::getInstance().getMessage();
-                        LOG("ch1: %d", message.sampleCh1[0]);
-#endif
-                    },
+                    .startADC = std::bind(adc_start),
+                    .stopADC = std::bind(adc_stop),
                     .setSampleFs = [](uint32_t fs) {
                         return adc_setFrequency(fs);
+                    },
+                    .setSampling = [](bool sampling) {
+                        led_setValue(sampling);
                     },
             });
 }
@@ -54,5 +46,5 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    Scope::getInstance().add(adc_getVolmV(0));
+    Scope::getInstance().onADC(adc_getVolmV(0));
 }

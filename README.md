@@ -54,14 +54,17 @@ PA8  | 1kHz方波信号 用于自测
                     .sendData = [](uint8_t* data, size_t size) {
                         // 用串口发送数据
                     },
-                    .startSample = []{
+                    .startADC = []{
                         // 开始采样
                     },
-                    .stopSample = []{
+                    .stopADC = []{
                         // 停止采样
                     },
                     .setSampleFs = [](uint32_t fs) {
                         // 设置采样率 返回实际的采样率
+                    },
+                    .setSampling = [](bool sampling) {
+                        // 可用来控制指示灯状态
                     },
             });
 ```
@@ -69,10 +72,11 @@ PA8  | 1kHz方波信号 用于自测
 ```cpp
     Scope::getInstance().onRead(data, size);
 ```
-* 当一次ADC转换完成
+* 当一次ADC转换完成  
 ```cpp
-    Scope::getInstance().add(volmV);
+    Scope::getInstance().onADC(volmV);
 ```
+注：`startADC`之前不要触发`onADC`
 
 ## DevelopTools
 

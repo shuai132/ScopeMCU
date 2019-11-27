@@ -11,14 +11,13 @@ void adc_init() {
     if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK) {
         FATAL();
     }
+}
 
+void adc_start() {
     // start adc dma
     if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCValue, CHANNEL_NUM) != HAL_OK) {
         FATAL();
     }
-
-    // 初始采样频率: 10kHz
-    adc_setFrequency(10000);
 
     if (HAL_TIM_Base_Init(&htim3) != HAL_OK) {
         FATAL();
@@ -26,6 +25,13 @@ void adc_init() {
 
     // start timer
     if (HAL_TIM_Base_Start_IT(&htim3) != HAL_OK) {
+        FATAL();
+    }
+}
+
+void adc_stop() {
+    // start timer
+    if (HAL_TIM_Base_Stop_IT(&htim3) != HAL_OK) {
         FATAL();
     }
 }

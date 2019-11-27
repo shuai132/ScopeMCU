@@ -11,11 +11,14 @@ class Scope {
         // 发送数据到上位机
         std::function<void(uint8_t* data, size_t size)> sendData;
 
-        std::function<void()> startSample;
-        std::function<void()> stopSample;
+        std::function<void()> startADC;
+        std::function<void()> stopADC;
 
         // 设置期望采样率并返回实际采样率
         std::function<uint32_t(uint32_t sampleFs)> setSampleFs;
+
+        // 可用于led指示灯
+        std::function<void(bool recording)> setSampling;
     };
 
 private:
@@ -35,13 +38,13 @@ public:
      * 每采样一次adc 计算出mV并调用此方法
      * @param volmV
      */
-    void add(uint16_t volmV);
+    void onADC(uint16_t volmV);
 
     /**
      * 当前实现下电压的极值mV
      * @param volMaxmV
      */
-    void updateVolMax(uint32_t volMaxmV);
+    void setVolMax(uint32_t volMaxmV);
 
     /**
      * 接收到上位机数据时调用
@@ -50,12 +53,14 @@ public:
      */
     void onRead(uint8_t* data, size_t size);
 
+private:
+    void addADC(uint16_t volmV);
+
     const Message& getMessage();
 
-private:
     void startSample();
 
-    void abortSample();
+    void stopSample();
 
     void onSampleFinish();
 

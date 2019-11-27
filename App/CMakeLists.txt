@@ -1,7 +1,7 @@
 set(TARGET_NAME app)
 
 # PacketProcessor
-set(packetprocessor_BUILD_EXAMPLE OFF)
+option(packetprocessor_BUILD_EXAMPLE "build example" OFF)
 add_subdirectory(modules/PacketProcessor)
 link_libraries(packetprocessor)
 

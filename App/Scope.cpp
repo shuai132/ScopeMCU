@@ -2,9 +2,9 @@
 
 Scope::Scope()
     : processor_(false) {
-    processor_.setOnPacketHandle([this](const std::string& payload) {
-        abortSample();
-        Cmd* cmd = (Cmd*)payload.data();
+    processor_.setOnPacketHandle([this](uint8_t* payload, size_t size) {
+        stopSample();
+        Cmd* cmd = (Cmd*)payload;
         Cmd::Data data = cmd->data;
         switch (cmd->type) {
             case Cmd::Type::NONE:
@@ -36,42 +36,51 @@ Scope& Scope::getInstance() {
     return instance;
 }
 
-void Scope::add(uint16_t volmV) {
-    message_.sampleCh1[samplePos_] = volmV;
-    if (++samplePos_ >= sampleInfo_.sampleNum) {
-        mcu_.stopSample();
-        samplePos_ = 0;
-        onSampleFinish();
+void Scope::setMcuImpl(MCU mcu) {
+    mcu_ = std::move(mcu);
+    updateFs(10000);
+    updateSampleNum(1024);
+    updateTriggerMode(TriggerMode::NORMAL);
+    updateTriggerSlope(TriggerSlope::UP);
+    updateTriggerLevel(1000);
+    startSample();
+    mcu_.startADC();
+}
+
+void Scope::onADC(uint16_t volmV) {
+    static uint16_t lastVol = volmV;
+
+    if (sampling_) {
+        addADC(volmV);
+        return;
     }
 
-    if (sampling_) return;
-
     // trigger logic
-    static uint16_t lastVol = volmV;
     if (sampleInfo_.triggerMode == TriggerMode::NORMAL) {
         switch (sampleInfo_.triggerSlope) {
             case TriggerSlope::UP:
                 if (lastVol < sampleInfo_.triggerLevel && sampleInfo_.triggerLevel < volmV) {
                     startSample();
+                    addADC(lastVol);
+                    addADC(volmV);
                 }
                 break;
             case TriggerSlope::DOWN:
                 if (lastVol > sampleInfo_.triggerLevel && sampleInfo_.triggerLevel > volmV) {
                     startSample();
+                    addADC(lastVol);
+                    addADC(volmV);
                 }
                 break;
         }
     }
+    else if (sampleInfo_.triggerMode == TriggerMode::ALWAYS) {
+        startSample();
+    }
     lastVol = volmV;
 }
 
-void Scope::setMcuImpl(MCU mcu) {
-    mcu_ = std::move(mcu);
-    updateFs(10000);
-    startSample();
-}
-
-void Scope::updateVolMax(uint32_t volMaxmV) {
+void Scope::setVolMax(uint32_t volMaxmV) {
     sampleInfo_.volMaxmV = volMaxmV;
 }
 
@@ -79,26 +88,39 @@ void Scope::onRead(uint8_t* data, size_t size) {
     processor_.feed(data, size);
 }
 
+void Scope::addADC(uint16_t volmV) {
+    message_.sampleCh1[samplePos_] = volmV;
+    if (++samplePos_ >= sampleInfo_.sampleNum) {
+        onSampleFinish();
+    }
+};
+
 const Message& Scope::getMessage() {
     return message_;
 }
 
 void Scope::startSample() {
-    samplePos_ = 0;
     sampling_ = true;
-    mcu_.startSample();
+    samplePos_ = 0;
+    mcu_.setSampling(true);
 }
 
-void Scope::abortSample() {
-    mcu_.stopSample();
+void Scope::stopSample() {
     sampling_ = false;
     samplePos_ = 0;
+    mcu_.setSampling(false);
 }
 
 void Scope::onSampleFinish() {
+    stopSample();
+#if 1
     processor_.packForeach((uint8_t*)&message_, sizeof(message_), [this](uint8_t* data, size_t size) {
         mcu_.sendData(data, size);
     });
+#else
+    auto& message = Scope::getInstance().getMessage();
+    printf("ch1: %d\r\n", message.sampleCh1[0]);
+#endif
     if (sampleInfo_.triggerMode == TriggerMode::ALWAYS) {
         startSample();
     }
