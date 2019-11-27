@@ -3,13 +3,14 @@
 Scope::Scope()
     : processor_(false) {
     processor_.setOnPacketHandle([this](const std::string& payload) {
+        abortSample();
         Cmd* cmd = (Cmd*)payload.data();
         Cmd::Data data = cmd->data;
         switch (cmd->type) {
             case Cmd::Type::NONE:
                 break;
             case Cmd::Type::SET_SAMPLE_FS:
-                updateFs(mcu_.setSampleFs(data.sampleFs));
+                updateFs(data.sampleFs);
                 break;
             case Cmd::Type::SET_SAMPLE_NUM:
                 updateSampleNum(data.sampleNum > SAMPLE_NUM_MAX ? SAMPLE_NUM_MAX : data.sampleNum);
@@ -24,7 +25,7 @@ Scope::Scope()
                 updateTriggerLevel(data.triggerLevel);
                 break;
             case Cmd::Type::SOFTWARE_TRIGGER:
-                startNewSample();
+                startSample();
                 break;
         }
     });
@@ -37,11 +38,13 @@ Scope& Scope::getInstance() {
 
 void Scope::add(uint16_t volmV) {
     message_.sampleCh1[samplePos_] = volmV;
-    if (++samplePos_ == sampleInfo_.sampleNum) {
+    if (++samplePos_ >= sampleInfo_.sampleNum) {
         mcu_.stopSample();
         samplePos_ = 0;
         onSampleFinish();
     }
+
+    if (sampling_) return;
 
     // trigger logic
     static uint16_t lastVol = volmV;
@@ -49,12 +52,12 @@ void Scope::add(uint16_t volmV) {
         switch (sampleInfo_.triggerSlope) {
             case TriggerSlope::UP:
                 if (lastVol < sampleInfo_.triggerLevel && sampleInfo_.triggerLevel < volmV) {
-                    startNewSample();
+                    startSample();
                 }
                 break;
             case TriggerSlope::DOWN:
                 if (lastVol > sampleInfo_.triggerLevel && sampleInfo_.triggerLevel > volmV) {
-                    startNewSample();
+                    startSample();
                 }
                 break;
         }
@@ -64,8 +67,8 @@ void Scope::add(uint16_t volmV) {
 
 void Scope::setMcuImpl(MCU mcu) {
     mcu_ = std::move(mcu);
-    mcu_.setSampleFs(10000);
-    mcu_.startSample();
+    updateFs(10000);
+    startSample();
 }
 
 void Scope::updateVolMax(uint32_t volMaxmV) {
@@ -80,9 +83,16 @@ const Message& Scope::getMessage() {
     return message_;
 }
 
-void Scope::startNewSample() {
+void Scope::startSample() {
     samplePos_ = 0;
+    sampling_ = true;
     mcu_.startSample();
+}
+
+void Scope::abortSample() {
+    mcu_.stopSample();
+    sampling_ = false;
+    samplePos_ = 0;
 }
 
 void Scope::onSampleFinish() {
@@ -90,22 +100,26 @@ void Scope::onSampleFinish() {
         mcu_.sendData(data, size);
     });
     if (sampleInfo_.triggerMode == TriggerMode::ALWAYS) {
-        mcu_.startSample();
+        startSample();
     }
 }
 
 void Scope::updateFs(uint32_t fs) {
-    sampleInfo_.sampleFs = fs;
+    auto realFs = mcu_.setSampleFs(fs);
+    sampleInfo_.sampleFs = realFs;
 }
 
 void Scope::updateSampleNum(uint32_t num) {
+    if (num > SAMPLE_NUM_MAX) {
+        num = SAMPLE_NUM_MAX;
+    }
     sampleInfo_.sampleNum = num;
 }
 
 void Scope::updateTriggerMode(TriggerMode mode) {
     sampleInfo_.triggerMode = mode;
     if (mode == TriggerMode::SOFTWARE) {
-        startNewSample();
+        startSample();
     }
 }
 

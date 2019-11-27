@@ -53,7 +53,9 @@ public:
     const Message& getMessage();
 
 private:
-    void startNewSample();
+    void startSample();
+
+    void abortSample();
 
     void onSampleFinish();
 
@@ -73,6 +75,8 @@ private:
     Message message_;
 
     SampleInfo& sampleInfo_ = message_.sampleInfo;
+
+    bool sampling_ = false;
 
     uint16_t samplePos_ = 0;
 
