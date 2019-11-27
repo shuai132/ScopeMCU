@@ -1,23 +1,19 @@
-#include <gpio.h>
-#include <usart.h>
-#include <tim.h>
 #include "app.h"
-#include "log.h"
+#include "usart.h"
+#include "tim.h"
 #include "md_adc.h"
 #include "md_pwm.h"
+#include "md_led.h"
 #include "Scope.h"
-
-static void setLed(bool enable) {
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, enable ? GPIO_PIN_RESET : GPIO_PIN_SET);
-}
+#include "log.h"
 
 void init(void) {
 }
 
 void setup(void) {
     LOGD("setup...");
-    adcInit();
-    pwmInit();
+    adc_init();
+    pwm_init();
 
     static uint8_t data;
     HAL_UART_Receive_IT(&huart1, &data, 1);
@@ -31,18 +27,18 @@ void setup(void) {
                     },
                     .startSample = []{
                         HAL_TIM_Base_Start(&htim3);
-                        setLed(true);
+                        led_setValue(true);
                     },
                     .stopSample = []{
                         HAL_TIM_Base_Stop(&htim3);
-                        setLed(false);
+                        led_setValue(false);
 #if 0
                         auto& message = Scope::getInstance().getMessage();
                         LOG("ch1: %d", message.sampleCh1[0]);
 #endif
                     },
                     .setSampleFs = [](uint32_t fs) {
-                        return adcSetFrequency(fs);
+                        return adc_setFrequency(fs);
                     },
             });
 }
@@ -54,4 +50,9 @@ void loop(void) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     uint8_t data = huart->Instance->DR;
     Scope::getInstance().onRead(&data, 1);
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    Scope::getInstance().add(adc_getVolmV(0));
 }

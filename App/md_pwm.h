@@ -2,4 +2,4 @@
 
 #include <cstdint>
 
-void pwmInit();
+void pwm_init();

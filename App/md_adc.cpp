@@ -1,13 +1,12 @@
-#include <adc.h>
-#include <tim.h>
 #include <cmath>
+#include "adc.h"
+#include "tim.h"
 #include "md_adc.h"
 #include "log.h"
-#include "Scope.h"
 
 volatile uint16_t ADCValue[CHANNEL_NUM];
 
-void adcInit() {
+void adc_init() {
     // 自动校准
     if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK) {
         FATAL();
@@ -19,7 +18,7 @@ void adcInit() {
     }
 
     // 初始采样频率: 10kHz
-    adcSetFrequency(10000);
+    adc_setFrequency(10000);
 
     if (HAL_TIM_Base_Init(&htim3) != HAL_OK) {
         FATAL();
@@ -31,7 +30,7 @@ void adcInit() {
     }
 }
 
-uint32_t adcSetFrequency(uint32_t frequency) {
+uint32_t adc_setFrequency(uint32_t frequency) {
     const int SYS_MHZ = 72;
     const uint32_t CLOCKS = SYS_MHZ * 1000000;
     uint32_t period = CLOCKS / frequency;
@@ -65,13 +64,7 @@ uint32_t adcSetFrequency(uint32_t frequency) {
  * STM32F1里同样有内部基准电压，但它没有像F0一样每颗芯片有个精确测定值。
  * 其电压范围在1.16-1.26间，一般取1.2V。
  */
-uint16_t getVolmV(int ch) {
+uint16_t adc_getVolmV(int ch) {
     assert_param(0 <= ch && ch < CHANNEL_NUM);
     return 1200 * ADCValue[ch] / ADCValue[CHANNEL_NUM - 1];
-}
-
-/****************** weak callback ******************/
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-    Scope::getInstance().add(getVolmV(0));
 }
