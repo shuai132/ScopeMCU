@@ -20,7 +20,7 @@ MCU: STM32F103C8Tx
 * 采样深度可调 默认最大2048点
 * 内置1kHz方波信号用于自测
 * 支持FFT频谱分析(上位机实现)
-* TODO: 多种触发方式
+* 多种触发方式
 * TODO: USB CDC模拟串口
 * TODO: Arduino工程
 

@@ -4,34 +4,56 @@
 
 const uint16_t SAMPLE_NUM_MAX = 1024 * 2;
 
-#pragma pack(push, 2)
+#pragma pack(push, 1)
+
+enum class TriggerMode : uint8_t {
+    ALWAYS = 0,
+    NORMAL,
+    SOFTWARE,
+};
+
+enum class TriggerSlope : uint8_t {
+    UP = 0,
+    DOWN,
+};
+
+using TriggerLevel = uint16_t;
+
+struct SampleInfo {
+    uint16_t sampleNum;
+    uint16_t volMaxmV;
+    uint32_t sampleFs;
+    TriggerMode triggerMode;
+    TriggerSlope triggerSlope;
+    TriggerLevel triggerLevel;
+};
+
 struct Message  {
-    uint32_t volMaxmV  = 0;
-    uint32_t sampleFs  = 0;
-    uint16_t sampleNum = SAMPLE_NUM_MAX;
+    SampleInfo sampleInfo{};
     uint16_t sampleCh1[SAMPLE_NUM_MAX]{};
 };
-#pragma pack(pop)
 
-#pragma pack(push, 1)
 struct Cmd  {
     enum class Type : uint8_t {
         NONE = 0,
-        SET_SAMPLE_FS,      // data: fs
-        SET_SAMPLE_NUM,     // data: num
-        SET_TRIGGER_MODE,   // data: mode
-        TRIGGER_SAMPLE,     // no data
+        SET_SAMPLE_FS,      // data: fs(Hz)
+        SET_SAMPLE_NUM,     // data: num(point)
+        SET_TRIGGER_MODE,   // data: mode(TriggerMode)
+        SET_TRIGGER_SLOPE,  // data: mode(TriggerLevel)
+        SET_TRIGGER_LEVEL,  // data: mode(mV)
+        SOFTWARE_TRIGGER,   // no data
     };
 
-    enum class TriggerMode {
-        ALWAYS = 0,
-        UP,
-        DOWN,
-        AUTO,
-        HAND,
+    union Data {
+        uint32_t sampleFs;
+        uint32_t sampleNum;
+        TriggerMode triggerMode;
+        TriggerSlope triggerSlope;
+        TriggerLevel triggerLevel;
     };
 
     Type type = Type::NONE;
-    uint32_t data{};
+    Data data{};
 };
+
 #pragma pack(pop)

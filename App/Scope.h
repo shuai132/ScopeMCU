@@ -18,8 +18,6 @@ class Scope {
         std::function<uint32_t(uint32_t sampleFs)> setSampleFs;
     };
 
-    using TriggerMode = Cmd::TriggerMode;
-
 private:
     Scope();
 
@@ -55,20 +53,28 @@ public:
     const Message& getMessage();
 
 private:
+    void startNewSample();
+
     void onSampleFinish();
 
     void updateFs(uint32_t fs);
 
     void updateSampleNum(uint32_t num);
 
+    void updateTriggerMode(TriggerMode mode);
+
+    void updateTriggerSlope(TriggerSlope slope);
+
+    void updateTriggerLevel(TriggerLevel level);
+
 private:
     PacketProcessor processor_;
 
     Message message_;
 
+    SampleInfo& sampleInfo_ = message_.sampleInfo;
+
     uint16_t samplePos_ = 0;
 
     MCU mcu_;
-
-    TriggerMode triggerMode_ = TriggerMode::ALWAYS;
 };
