@@ -1,8 +1,12 @@
-# Scope
+# ScopeMCU
 
-[![Build Status](https://github.com/shuai132/scope_mcu/workflows/build/badge.svg)](https://github.com/shuai132/scope_mcu/actions?workflow=build)
+[![Build Status](https://github.com/shuai132/ScopeMCU/workflows/build/badge.svg)](https://github.com/shuai132/ScopeMCU/actions?workflow=build)
+
+Oscilloscope for MCU
 
 MCU: STM32F103C8Tx
+
+需配合[ScopeGUI](https://github.com/shuai132/ScopeGUI)使用
 
 ## Introduction
 
