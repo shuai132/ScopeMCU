@@ -14,6 +14,7 @@ void adc_init() {
 }
 
 void adc_start() {
+    LOGD("adc_start");
     // start adc dma
     if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCValue, CHANNEL_NUM) != HAL_OK) {
         FATAL();
@@ -30,6 +31,7 @@ void adc_start() {
 }
 
 void adc_stop() {
+    LOGD("adc_stop");
     // start timer
     if (HAL_TIM_Base_Stop_IT(&htim3) != HAL_OK) {
         FATAL();
@@ -66,7 +68,9 @@ uint32_t adc_setFrequency(uint32_t frequency) {
         FATAL();
     }
 
-    return CLOCKS / (p1 * p2);
+    uint32_t realFs = CLOCKS / (p1 * p2);
+    LOGD("realFs: %ld", realFs);
+    return realFs;
 }
 
 /**

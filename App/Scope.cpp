@@ -114,7 +114,7 @@ void Scope::onSampleFinish() {
         mcu_.sendData(data, size);
     });
 
-    LOGD("ch1: %d", message_.sampleCh1[0]);
+    //LOGD("ch1: %d", message_.sampleCh1[0]);
 
     if (sampleInfo_.triggerMode == TriggerMode::ALWAYS) {
         startSample();
