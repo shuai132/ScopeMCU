@@ -23,6 +23,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
+#include "app.h"
 
 /* USER CODE END INCLUDE */
 
@@ -265,6 +266,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 6 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+  on_usb_cdc_data(Buf, *Len);
   return (USBD_OK);
   /* USER CODE END 6 */
 }

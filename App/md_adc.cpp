@@ -62,6 +62,10 @@ uint32_t adc_setFrequency(uint32_t frequency) {
     htim3.Init.Prescaler = p1 - 1;
     htim3.Init.Period    = p2 - 1;
 
+    if (HAL_TIM_Base_Init(&htim3) != HAL_OK) {
+        FATAL();
+    }
+
     return CLOCKS / (p1 * p2);
 }
 

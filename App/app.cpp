@@ -41,12 +41,10 @@ void loop(void) {
     HAL_Delay(100);
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    uint8_t data = huart->Instance->DR;
-    Scope::getInstance().onRead(&data, 1);
+void on_usb_cdc_data(uint8_t* data, size_t size) {
+    Scope::getInstance().onRead(data, size);
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
     Scope::getInstance().onADC(adc_getVolmV(0));
 }
