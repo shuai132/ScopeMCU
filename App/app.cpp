@@ -7,6 +7,8 @@
 #include "Scope.h"
 #include "log.h"
 
+using namespace scope;
+
 void init(void) {
     usb_plugged();
 }

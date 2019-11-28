@@ -6,6 +6,8 @@
 #include "Portable.h"
 #include "PacketProcessor.h"
 
+namespace scope {
+
 class Scope {
     struct MCU {
         // 发送数据到上位机
@@ -85,3 +87,5 @@ private:
 
     MCU mcu_;
 };
+
+}

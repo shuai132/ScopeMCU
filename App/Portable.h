@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+namespace scope {
+
 const uint16_t SAMPLE_NUM_MAX = 1024 * 2;
 
 #pragma pack(push, 1)
@@ -57,3 +59,5 @@ struct Cmd  {
 };
 
 #pragma pack(pop)
+
+}

@@ -1,6 +1,8 @@
 #include "Scope.h"
 #include "log.h"
 
+namespace scope {
+
 Scope::Scope()
     : processor_(false) {
     processor_.setOnPacketHandle([this](uint8_t* payload, size_t size) {
@@ -146,4 +148,6 @@ void Scope::updateTriggerSlope(TriggerSlope slope) {
 
 void Scope::updateTriggerLevel(TriggerLevel level) {
     sampleInfo_.triggerLevel = level;
+}
+
 }
