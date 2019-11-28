@@ -3,10 +3,12 @@
 #include "md_adc.h"
 #include "md_pwm.h"
 #include "md_led.h"
+#include "md_usb.h"
 #include "Scope.h"
 #include "log.h"
 
 void init(void) {
+    usb_plugged();
 }
 
 void setup(void) {
@@ -22,7 +24,7 @@ void setup(void) {
     scope.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
-                        HAL_UART_Transmit(&huart1, data, size, 0xFFFF);
+                        usb_cdcSend(data, size);
                     },
                     .startADC = std::bind(adc_start),
                     .stopADC = std::bind(adc_stop),

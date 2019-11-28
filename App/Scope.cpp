@@ -1,4 +1,5 @@
 #include "Scope.h"
+#include "log.h"
 
 Scope::Scope()
     : processor_(false) {
@@ -95,10 +96,6 @@ void Scope::addADC(uint16_t volmV) {
     }
 };
 
-const Message& Scope::getMessage() {
-    return message_;
-}
-
 void Scope::startSample() {
     sampling_ = true;
     samplePos_ = 0;
@@ -113,14 +110,12 @@ void Scope::stopSample() {
 
 void Scope::onSampleFinish() {
     stopSample();
-#if 1
     processor_.packForeach((uint8_t*)&message_, sizeof(message_), [this](uint8_t* data, size_t size) {
         mcu_.sendData(data, size);
     });
-#else
-    auto& message = Scope::getInstance().getMessage();
-    printf("ch1: %d\r\n", message.sampleCh1[0]);
-#endif
+
+    LOGD("ch1: %d", message_.sampleCh1[0]);
+
     if (sampleInfo_.triggerMode == TriggerMode::ALWAYS) {
         startSample();
     }

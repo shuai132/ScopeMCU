@@ -56,8 +56,6 @@ public:
 private:
     void addADC(uint16_t volmV);
 
-    const Message& getMessage();
-
     void startSample();
 
     void stopSample();

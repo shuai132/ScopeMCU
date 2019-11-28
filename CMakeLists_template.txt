@@ -8,7 +8,7 @@ SET(CMAKE_C_COMPILER_WORKS 1)
 SET(CMAKE_C_COMPILER arm-none-eabi-gcc)
 SET(CMAKE_CXX_COMPILER_WORKS 1)
 SET(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
+set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
 set(CMAKE_AR arm-none-eabi-ar)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
@@ -25,7 +25,7 @@ SET(LINKER_SCRIPT $${CMAKE_SOURCE_DIR}/${linkerScript})
 
 SET(COMMON_FLAGS
     "-mcpu=${mcpu} $${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
-    -g -fno-common -fmessage-length=0 ${linkerFlags}")
+    -g -O2 -fno-common -fmessage-length=0 ${linkerFlags}")
 
 SET(CMAKE_CXX_FLAGS_INIT "$${COMMON_FLAGS} -std=c++11")
 SET(CMAKE_C_FLAGS_INIT "$${COMMON_FLAGS} -std=gnu99")
