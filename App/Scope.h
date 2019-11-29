@@ -43,10 +43,18 @@ public:
     void onADC(uint16_t volmV);
 
     /**
-     * 当前实现下电压的极值mV
+     * 当前实现下采样值范围mV
+     * @param volMinmV
      * @param volMaxmV
      */
-    void setVolMax(uint32_t volMaxmV);
+    void setVolLimits(uint16_t volMinmV, uint16_t volMaxmV);
+
+    /**
+     * 当前实现下采样率范围sps
+     * @param fsMinSps
+     * @param fsMaxSps
+     */
+    void setFsLimits(uint32_t fsMinSps, uint32_t fsMaxSps);
 
     /**
      * 接收到上位机数据时调用

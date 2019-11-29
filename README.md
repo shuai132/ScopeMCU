@@ -29,6 +29,7 @@ MCU: STM32F103C8Tx
 
 注: 
 * 未设计前端运放电路，只用于采集0~3.3V信号。
+* 为了采样精度，采样周期较长，当前最高采样率: 67ksps
 
 ## IO Map
 
@@ -64,7 +65,8 @@ PA10 | USART1 RX 调试串口
 * 初始化scope
 ```cpp
     auto& scope = Scope::getInstance();
-    scope.updateVolMax(3300);
+    scope.setVolLimits(0, 3300);
+    scope.setFsLimits(1, 10000);
     scope.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {

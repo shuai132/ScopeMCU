@@ -4,7 +4,9 @@
 
 namespace scope {
 
+#if SCOPE_IS_MCU
 const uint16_t SAMPLE_NUM_MAX = 1024 * 2;
+#endif
 
 #pragma pack(push, 1)
 
@@ -22,8 +24,20 @@ enum class TriggerSlope : uint8_t {
 using TriggerLevel = uint16_t;
 
 struct SampleInfo {
-    uint16_t sampleNum;
+    // device info
+    uint16_t volMinmV;
     uint16_t volMaxmV;
+    uint32_t fsMinSps;
+    uint32_t fsMaxSps;
+    uint32_t sampleNumMax
+#if SCOPE_IS_MCU
+            = SAMPLE_NUM_MAX;
+#else
+            ;
+#endif
+
+    // sample info
+    uint16_t sampleNum;
     uint32_t sampleFs;
     TriggerMode triggerMode;
     TriggerSlope triggerSlope;
@@ -32,7 +46,11 @@ struct SampleInfo {
 
 struct Message  {
     SampleInfo sampleInfo{};
+#if SCOPE_IS_MCU
     uint16_t sampleCh1[SAMPLE_NUM_MAX]{};
+#elif SCOPE_IS_GUI
+    uint16_t sampleCh1[0];
+#endif
 };
 
 struct Cmd  {

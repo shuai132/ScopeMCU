@@ -83,8 +83,14 @@ void Scope::onADC(uint16_t volmV) {
     lastVol = volmV;
 }
 
-void Scope::setVolMax(uint32_t volMaxmV) {
+void Scope::setVolLimits(uint16_t volMinmV, uint16_t volMaxmV) {
+    sampleInfo_.volMinmV = volMinmV;
     sampleInfo_.volMaxmV = volMaxmV;
+}
+
+void Scope::setFsLimits(uint32_t fsMinSps, uint32_t fsMaxSps) {
+    sampleInfo_.fsMinSps = fsMinSps;
+    sampleInfo_.fsMaxSps = fsMaxSps;
 }
 
 void Scope::onRead(uint8_t* data, size_t size) {
@@ -124,6 +130,9 @@ void Scope::onSampleFinish() {
 }
 
 void Scope::updateFs(uint32_t fs) {
+    if (fs > sampleInfo_.fsMaxSps) {
+        fs = sampleInfo_.fsMaxSps;
+    }
     auto realFs = mcu_.setSampleFs(fs);
     sampleInfo_.sampleFs = realFs;
 }
@@ -131,6 +140,8 @@ void Scope::updateFs(uint32_t fs) {
 void Scope::updateSampleNum(uint32_t num) {
     if (num > SAMPLE_NUM_MAX) {
         num = SAMPLE_NUM_MAX;
+    } else if (num < 2) {
+        num = 2;
     }
     sampleInfo_.sampleNum = num;
 }
