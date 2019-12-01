@@ -118,7 +118,7 @@ void Scope::stopSample() {
 
 void Scope::onSampleFinish() {
     stopSample();
-    processor_.packForeach((uint8_t*)&message_, sizeof(message_), [this](uint8_t* data, size_t size) {
+    processor_.packForeach((uint8_t*)&message_, message_.getSizeNow(), [this](uint8_t* data, size_t size) {
         mcu_.sendData(data, size);
     });
 

@@ -51,6 +51,10 @@ struct Message  {
 #elif SCOPE_IS_GUI
     uint16_t sampleCh1[0];
 #endif
+
+    uint16_t getSizeNow() {
+        return sizeof(sampleInfo) + sizeof(uint16_t) * sampleInfo.sampleNum;
+    }
 };
 
 struct Cmd  {
@@ -59,8 +63,8 @@ struct Cmd  {
         SET_SAMPLE_FS,      // data: fs(Hz)
         SET_SAMPLE_NUM,     // data: num(point)
         SET_TRIGGER_MODE,   // data: mode(TriggerMode)
-        SET_TRIGGER_SLOPE,  // data: mode(TriggerLevel)
-        SET_TRIGGER_LEVEL,  // data: mode(mV)
+        SET_TRIGGER_SLOPE,  // data: slope(TriggerSlope)
+        SET_TRIGGER_LEVEL,  // data: level(TriggerLevel)
         SOFTWARE_TRIGGER,   // no data
     };
 
