@@ -6,6 +6,11 @@ add_subdirectory(modules/PacketProcessor)
 link_libraries(packetprocessor)
 target_compile_definitions(packetprocessor PRIVATE NDEBUG)
 
+# log
+add_definitions(-DLOG_LINE_END_CRLF)
+include_directories(modules/log)
+
+# scope define
 add_definitions(-DSCOPE_IS_MCU)
 
 add_library(${TARGET_NAME} app.cpp md_adc.cpp md_pwm.cpp md_led.cpp md_usb.cpp Scope.cpp)
