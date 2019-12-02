@@ -6,10 +6,6 @@ add_subdirectory(modules/PacketProcessor)
 link_libraries(packetprocessor)
 target_compile_definitions(packetprocessor PRIVATE NDEBUG)
 
-# log
-add_definitions(-DLOG_LINE_END_CRLF)
-include_directories(modules/log)
-
 # scope define
 add_definitions(-DSCOPE_IS_MCU)
 

@@ -44,6 +44,10 @@ include_directories(${includes})
 add_executable($${PROJECT_NAME}.elf $${SOURCES} $${LINKER_SCRIPT})
 
 # custom cmake
+# log
+add_definitions(-DLOG_LINE_END_CRLF -DLOG_FOR_MCU)
+include_directories(App/modules/log)
+# app
 add_subdirectory(App)
 target_link_libraries(${PROJECT_NAME}.elf app)
 
