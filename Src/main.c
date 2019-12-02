@@ -9,10 +9,10 @@
   * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                             www.st.com/SLA0044
   *
   ******************************************************************************
   */
@@ -29,7 +29,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "log.h"
 #include "app.h"
 
 /* USER CODE END Includes */
@@ -89,28 +88,26 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  init();
+    init();
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM3_Init();
-  MX_USART1_UART_Init();
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
+  MX_TIM3_Init();
+  MX_USART1_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   setup();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    loop();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -175,7 +172,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  FATAL();
+
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -192,7 +189,6 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  FATAL("file:%s, line:%lu", file, line);
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
