@@ -1,5 +1,6 @@
 #include "gpio.h"
 #include "usbd_cdc_if.h"
+#include "log.h"
 
 /**
  * 软件复位后USB无法正常枚举 要模拟USB拔插
@@ -24,6 +25,12 @@ void usb_plugged() {
     HAL_Delay(10);
 }
 
-void usb_cdcSend(uint8_t* data, size_t size) {
-    while (USBD_OK != CDC_Transmit_FS(data, size));
+void usb_cdcSend(uint8_t* data, size_t size, uint32_t timeoutMs) {
+    timeoutMs += HAL_GetTick();
+    while (USBD_OK != CDC_Transmit_FS(data, size)) {
+        if (HAL_GetTick() >= timeoutMs) {
+            LOGW("send timeout!");
+            break;
+        }
+    }
 }
