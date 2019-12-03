@@ -46,7 +46,6 @@ void Scope::setMcuImpl(MCU mcu) {
     updateTriggerMode(TriggerMode::NORMAL);
     updateTriggerSlope(TriggerSlope::UP);
     updateTriggerLevel(1000);
-    startSample();
     mcu_.startADC();
 }
 
@@ -107,13 +106,13 @@ void Scope::addADC(uint16_t volmV) {
 void Scope::startSample() {
     sampling_ = true;
     samplePos_ = 0;
-    mcu_.setSampling(true);
+    mcu_.onSampling(true);
 }
 
 void Scope::stopSample() {
     sampling_ = false;
     samplePos_ = 0;
-    mcu_.setSampling(false);
+    mcu_.onSampling(false);
 }
 
 void Scope::onSampleFinish() {

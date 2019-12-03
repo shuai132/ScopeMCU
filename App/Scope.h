@@ -20,7 +20,7 @@ class Scope {
         std::function<uint32_t(uint32_t sampleFs)> setSampleFs;
 
         // 可用于led指示灯
-        std::function<void(bool recording)> setSampling;
+        std::function<void(bool sampling)> onSampling;
     };
 
 private:
@@ -62,6 +62,10 @@ public:
      * @param size
      */
     void onRead(uint8_t* data, size_t size);
+
+    bool isSampling() {
+        return sampling_;
+    }
 
 private:
     void addADC(uint16_t volmV);

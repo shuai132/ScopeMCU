@@ -85,7 +85,7 @@ PA10 | USART1 RX 调试串口
                     .setSampleFs = [](uint32_t fs) {
                         // 设置采样率 返回实际的采样率
                     },
-                    .setSampling = [](bool sampling) {
+                    .onSampling = [](bool sampling) {
                         // 可用来控制指示灯状态
                     },
             });

@@ -31,14 +31,17 @@ void setup(void) {
                     .setSampleFs = [](uint32_t fs) {
                         return adc_setFrequency(fs);
                     },
-                    .setSampling = [](bool sampling) {
+                    .onSampling = [](bool sampling) {
                         led_setValue(sampling);
                     },
             });
 }
 
 void loop(void) {
-    HAL_Delay(100);
+    HAL_Delay(500);
+    if (not Scope::getInstance().isSampling()) {
+        led_toggle();
+    }
 }
 
 void on_usb_cdc_data(uint8_t* data, size_t size) {
