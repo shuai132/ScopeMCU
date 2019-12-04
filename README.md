@@ -8,9 +8,7 @@ MCU: STM32F103C8Tx
 
 需配合[ScopeGUI](https://github.com/shuai132/ScopeGUI)使用
 
-**[Screenshots](https://github.com/shuai132/ScopeGUI/issues/1)**
-
-**[Archives](https://github.com/shuai132/ScopeGUI/issues/2)**
+[截图和二进制文件](https://github.com/shuai132/ScopeGUI/wiki)
 
 ## Introduction
 
