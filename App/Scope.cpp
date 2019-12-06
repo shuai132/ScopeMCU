@@ -17,7 +17,7 @@ Scope::Scope()
                 updateFs(data.sampleFs);
                 break;
             case Cmd::Type::SET_SAMPLE_NUM:
-                updateSampleNum(data.sampleNum > SAMPLE_NUM_MAX ? SAMPLE_NUM_MAX : data.sampleNum);
+                updateSampleNum(data.sampleNum > maxSampleNum_ ? maxSampleNum_ : data.sampleNum);
                 break;
             case Cmd::Type::SET_TRIGGER_MODE:
                 updateTriggerMode(data.triggerMode);
@@ -50,11 +50,11 @@ void Scope::setMcuImpl(MCU mcu) {
     mcu_.startADC();
 }
 
-void Scope::onADC(uint16_t volmV) {
-    static uint16_t lastVol = volmV;
+void Scope::onADC(SampleVo_t vol) {
+    static auto lastVol = vol;
 
     if (sampling_) {
-        addADC(volmV);
+        addADC(vol);
         return;
     }
 
@@ -62,17 +62,17 @@ void Scope::onADC(uint16_t volmV) {
     if (sampleInfo_.triggerMode == TriggerMode::NORMAL) {
         switch (sampleInfo_.triggerSlope) {
             case TriggerSlope::UP:
-                if (lastVol < sampleInfo_.triggerLevel && sampleInfo_.triggerLevel < volmV) {
+                if (lastVol < sampleInfo_.triggerLevel && sampleInfo_.triggerLevel < vol) {
                     startSample();
                     addADC(lastVol);
-                    addADC(volmV);
+                    addADC(vol);
                 }
                 break;
             case TriggerSlope::DOWN:
-                if (lastVol > sampleInfo_.triggerLevel && sampleInfo_.triggerLevel > volmV) {
+                if (lastVol > sampleInfo_.triggerLevel && sampleInfo_.triggerLevel > vol) {
                     startSample();
                     addADC(lastVol);
-                    addADC(volmV);
+                    addADC(vol);
                 }
                 break;
         }
@@ -80,26 +80,35 @@ void Scope::onADC(uint16_t volmV) {
     else if (sampleInfo_.triggerMode == TriggerMode::ALWAYS) {
         startSample();
     }
-    lastVol = volmV;
+    lastVol = vol;
 }
 
-void Scope::setVolLimits(uint16_t volMinmV, uint16_t volMaxmV) {
-    sampleInfo_.volMinmV = volMinmV;
-    sampleInfo_.volMaxmV = volMaxmV;
+void Scope::setVolLimits(SampleVo_t volMin, SampleVo_t volMax) {
+    sampleInfo_.volMinmV = volMin;
+    sampleInfo_.volMaxmV = volMax;
 }
 
-void Scope::setFsLimits(uint32_t fsMinSps, uint32_t fsMaxSps) {
+void Scope::setFsLimits(SampleFs_t fsMinSps, SampleFs_t fsMaxSps) {
     sampleInfo_.fsMinSps = fsMinSps;
     sampleInfo_.fsMaxSps = fsMaxSps;
+}
+
+void Scope::setMaxSn(SampleSn_t sn) {
+    maxSampleNum_ = sn;
+    message_.reset((Message*)new char[Message::CalcBytes(maxSampleNum_)]);
 }
 
 void Scope::onRead(uint8_t* data, size_t size) {
     processor_.feed(data, size);
 }
 
-void Scope::addADC(uint16_t volmV) {
-    message_.sampleCh1[samplePos_] = volmV;
-    if (++samplePos_ >= sampleInfo_.sampleNum) {
+bool Scope::isSampling() {
+    return sampling_;
+}
+
+void Scope::addADC(SampleVo_t vol) {
+    message_->sampleCh1[samplePos_] = vol;
+    if (++samplePos_ >= sampleInfo_.sampleSn) {
         onSampleFinish();
     }
 };
@@ -118,18 +127,19 @@ void Scope::stopSample() {
 
 void Scope::onSampleFinish() {
     stopSample();
-    processor_.packForeach((uint8_t*)&message_, message_.getSizeNow(), [this](uint8_t* data, size_t size) {
+    message_->sampleInfo = sampleInfo_;
+    processor_.packForeach(message_.get(), Message::CalcBytes(sampleInfo_.sampleSn), [this](uint8_t* data, size_t size) {
         mcu_.sendData(data, size);
     });
 
-    //LOGD("ch1: %d", message_.sampleCh1[0]);
+    //LOGD("ch1: %d", message_->sampleCh1[0]);
 
     if (sampleInfo_.triggerMode == TriggerMode::ALWAYS) {
         startSample();
     }
 }
 
-void Scope::updateFs(uint32_t fs) {
+void Scope::updateFs(SampleFs_t fs) {
     if (fs > sampleInfo_.fsMaxSps) {
         fs = sampleInfo_.fsMaxSps;
     }
@@ -137,13 +147,13 @@ void Scope::updateFs(uint32_t fs) {
     sampleInfo_.sampleFs = realFs;
 }
 
-void Scope::updateSampleNum(uint32_t num) {
-    if (num > SAMPLE_NUM_MAX) {
-        num = SAMPLE_NUM_MAX;
-    } else if (num < 2) {
-        num = 2;
+void Scope::updateSampleNum(SampleSn_t sn) {
+    if (sn > maxSampleNum_) {
+        sn = maxSampleNum_;
+    } else if (sn < 2) {
+        sn = 2;
     }
-    sampleInfo_.sampleNum = num;
+    sampleInfo_.sampleSn = sn;
 }
 
 void Scope::updateTriggerMode(TriggerMode mode) {
@@ -157,8 +167,8 @@ void Scope::updateTriggerSlope(TriggerSlope slope) {
     sampleInfo_.triggerSlope = slope;
 }
 
-void Scope::updateTriggerLevel(TriggerLevel level) {
-    sampleInfo_.triggerLevel = level;
+void Scope::updateTriggerLevel(TriggerLevel vol) {
+    sampleInfo_.triggerLevel = vol;
 }
 
 }

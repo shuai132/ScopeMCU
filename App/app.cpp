@@ -24,6 +24,7 @@ void setup(void) {
     auto& scope = Scope::getInstance();
     scope.setVolLimits(0, 3300);
     scope.setFsLimits(1, 67000);
+    scope.setMaxSn(2048);
     scope.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
@@ -31,7 +32,7 @@ void setup(void) {
                     },
                     .startADC = std::bind(adc_start),
                     .stopADC = std::bind(adc_stop),
-                    .setSampleFs = [](uint32_t fs) {
+                    .setSampleFs = [](SampleFs_t fs) {
                         return adc_setFrequency(fs);
                     },
                     .onSampling = [](bool sampling) {

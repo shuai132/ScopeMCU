@@ -69,6 +69,7 @@ PA10 | USART1 RX 调试串口
     auto& scope = Scope::getInstance();
     scope.setVolLimits(0, 3300);
     scope.setFsLimits(1, 10000);
+    scope.setMaxSn(2048);
     scope.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
@@ -94,7 +95,7 @@ PA10 | USART1 RX 调试串口
 ```
 * 当一次ADC转换完成  
 ```cpp
-    Scope::getInstance().onADC(volmV);
+    Scope::getInstance().onADC(vol);
 ```
 注：`startADC`之前不要触发`onADC`
 

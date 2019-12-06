@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <cstdint>
+#include <memory>
 
 #include "Portable.h"
 #include "PacketProcessor.h"
@@ -17,7 +18,7 @@ class Scope {
         std::function<void()> stopADC;
 
         // 设置期望采样率并返回实际采样率
-        std::function<uint32_t(uint32_t sampleFs)> setSampleFs;
+        std::function<SampleFs_t(SampleFs_t sampleFs)> setSampleFs;
 
         // 可用于led指示灯
         std::function<void(bool sampling)> onSampling;
@@ -38,23 +39,29 @@ public:
 
     /**
      * 每采样一次adc 计算出mV并调用此方法
-     * @param volmV
+     * @param vol
      */
-    void onADC(uint16_t volmV);
+    void onADC(SampleVo_t vol);
 
     /**
      * 当前实现下采样值范围mV
-     * @param volMinmV
-     * @param volMaxmV
+     * @param volMin
+     * @param volMax
      */
-    void setVolLimits(uint16_t volMinmV, uint16_t volMaxmV);
+    void setVolLimits(SampleVo_t volMin, SampleVo_t volMax);
 
     /**
      * 当前实现下采样率范围sps
      * @param fsMinSps
      * @param fsMaxSps
      */
-    void setFsLimits(uint32_t fsMinSps, uint32_t fsMaxSps);
+    void setFsLimits(SampleFs_t fsMinSps, SampleFs_t fsMaxSps);
+
+    /**
+     * 设置最大采样点 取决于RAM大小
+     * @param sn
+     */
+    void setMaxSn(SampleSn_t sn);
 
     /**
      * 接收到上位机数据时调用
@@ -63,12 +70,11 @@ public:
      */
     void onRead(uint8_t* data, size_t size);
 
-    bool isSampling() {
-        return sampling_;
-    }
+    bool isSampling();
+
 
 private:
-    void addADC(uint16_t volmV);
+    void addADC(SampleVo_t vol);
 
     void startSample();
 
@@ -76,22 +82,22 @@ private:
 
     void onSampleFinish();
 
-    void updateFs(uint32_t fs);
+    void updateFs(SampleFs_t fs);
 
-    void updateSampleNum(uint32_t num);
+    void updateSampleNum(SampleSn_t sn);
 
     void updateTriggerMode(TriggerMode mode);
 
     void updateTriggerSlope(TriggerSlope slope);
 
-    void updateTriggerLevel(TriggerLevel level);
+    void updateTriggerLevel(TriggerLevel vol);
 
 private:
     PacketProcessor processor_;
 
-    Message message_;
-
-    SampleInfo& sampleInfo_ = message_.sampleInfo;
+    SampleInfo sampleInfo_{};
+    SampleSn_t& maxSampleNum_ = sampleInfo_.sampleNumMax;
+    std::unique_ptr<Message> message_;
 
     bool sampling_ = false;
 
