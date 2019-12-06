@@ -5,6 +5,7 @@ namespace scope {
 
 Scope::Scope()
     : processor_(false) {
+    processor_.setMaxBufferSize(sizeof(Cmd));
     processor_.setOnPacketHandle([this](uint8_t* payload, size_t size) {
         stopSample();
         Cmd* cmd = (Cmd*)payload;

@@ -11,6 +11,9 @@ using namespace scope;
 
 void init(void) {
     usb_plugged();
+    std::set_new_handler([] {
+        FATAL("out of memory");
+    });
 }
 
 void setup(void) {
