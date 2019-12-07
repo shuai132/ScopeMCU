@@ -1,5 +1,5 @@
+#include <stm32f1xx_hal.h>
 #include "app.h"
-#include "usart.h"
 #include "md_adc.h"
 #include "md_pwm.h"
 #include "md_led.h"

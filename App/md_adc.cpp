@@ -39,7 +39,7 @@ void adc_stop() {
 }
 
 uint32_t adc_setFrequency(uint32_t frequency) {
-    const int SYS_MHZ = 72;
+    const unsigned int SYS_MHZ = 48;
     const uint32_t CLOCKS = SYS_MHZ * 1000000;
     uint32_t period = CLOCKS / frequency;
 
@@ -49,7 +49,7 @@ uint32_t adc_setFrequency(uint32_t frequency) {
         uint16_t pm = sqrt(period);
         do {
             if (pm == 1) {
-                p1 = 72;
+                p1 = SYS_MHZ;
                 p2 = 1000000 / frequency;
                 break;
             }
