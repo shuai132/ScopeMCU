@@ -42,8 +42,8 @@ Scope& Scope::getInstance() {
 
 void Scope::setMcuImpl(MCU mcu) {
     mcu_ = std::move(mcu);
-    updateFs(10000);
-    updateSampleNum(1024);
+    updateFs(50000);
+    updateSampleNum(512);
     updateTriggerMode(TriggerMode::NORMAL);
     updateTriggerSlope(TriggerSlope::UP);
     updateTriggerLevel(1000);

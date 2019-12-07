@@ -49,7 +49,7 @@ uint32_t adc_setFrequency(uint32_t frequency) {
         uint16_t pm = sqrt(period);
         do {
             if (pm == 1) {
-                p1 = 72;
+                p1 = SYS_MHZ;
                 p2 = 1000000 / frequency;
                 break;
             }
@@ -69,7 +69,7 @@ uint32_t adc_setFrequency(uint32_t frequency) {
     }
 
     uint32_t realFs = CLOCKS / (p1 * p2);
-    LOGD("realFs: %ld", realFs);
+    LOGD("realFs: %ld, p1=%ld, p2=%ld", realFs, p1, p2);
     return realFs;
 }
 
