@@ -23,8 +23,8 @@ void setup(void) {
 
     auto& scope = Scope::getInstance();
     scope.setVolLimits(0, 3300);
-    scope.setFsLimits(1, 70000);
-    scope.setMaxSn(2048);
+    scope.setFsLimits(1, 260000);
+    scope.setMaxSn(4096);
     scope.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
@@ -55,6 +55,3 @@ void on_usb_cdc_data(uint8_t* data, size_t size) {
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
     Scope::getInstance().onADC(adc_getVolmV(0));
 }
-
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
-//}

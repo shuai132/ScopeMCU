@@ -1,14 +1,14 @@
 #${templateWarning}
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_VERSION 1)
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.7)
 
 # specify cross compilers and tools
 SET(CMAKE_C_COMPILER_WORKS 1)
 SET(CMAKE_C_COMPILER arm-none-eabi-gcc)
 SET(CMAKE_CXX_COMPILER_WORKS 1)
 SET(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
 set(CMAKE_AR arm-none-eabi-ar)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
@@ -25,7 +25,7 @@ SET(LINKER_SCRIPT $${CMAKE_SOURCE_DIR}/${linkerScript})
 
 SET(COMMON_FLAGS
     "-mcpu=${mcpu} $${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
-    -g -O2 -fno-common -fmessage-length=0 ${linkerFlags}")
+    -g -fno-common -fmessage-length=0 ${linkerFlags}")
 
 SET(CMAKE_CXX_FLAGS_INIT "$${COMMON_FLAGS} -std=c++11")
 SET(CMAKE_C_FLAGS_INIT "$${COMMON_FLAGS} -std=gnu99")
@@ -43,14 +43,6 @@ include_directories(${includes})
 
 add_executable($${PROJECT_NAME}.elf $${SOURCES} $${LINKER_SCRIPT})
 
-# custom cmake
-# log
-add_definitions(-DLOG_LINE_END_CRLF -DLOG_FOR_MCU)
-include_directories(App/modules/log)
-# app
-add_subdirectory(App)
-target_link_libraries(${PROJECT_NAME}.elf app)
-
 set(CMAKE_EXE_LINKER_FLAGS
     "$${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=$${PROJECT_BINARY_DIR}/$${PROJECT_NAME}.map")
 
@@ -62,3 +54,11 @@ add_custom_command(TARGET $${PROJECT_NAME}.elf POST_BUILD
         COMMAND $${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:$${PROJECT_NAME}.elf> $${BIN_FILE}
         COMMENT "Building $${HEX_FILE}
 Building $${BIN_FILE}")
+
+# custom cmake
+# log
+add_definitions(-DLOG_LINE_END_CRLF -DLOG_FOR_MCU)
+include_directories(App/modules/log)
+# app
+add_subdirectory(App)
+target_link_libraries(${PROJECT_NAME}.elf app)

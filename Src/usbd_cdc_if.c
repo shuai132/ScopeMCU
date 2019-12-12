@@ -2,7 +2,7 @@
 /**
   ******************************************************************************
   * @file           : usbd_cdc_if.c
-  * @version        : v2.0_Cube
+  * @version        : v1.0_Cube
   * @brief          : Usb device for Virtual Com Port.
   ******************************************************************************
   * @attention
@@ -66,8 +66,8 @@
 /* USER CODE BEGIN PRIVATE_DEFINES */
 /* Define size for the receive and transmit buffer over CDC */
 /* It's up to user to redefine and/or remove those define */
-#define APP_RX_DATA_SIZE  1000
-#define APP_TX_DATA_SIZE  1000
+#define APP_RX_DATA_SIZE  2048
+#define APP_TX_DATA_SIZE  2048
 /* USER CODE END PRIVATE_DEFINES */
 
 /**
