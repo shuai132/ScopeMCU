@@ -39,8 +39,8 @@ void adc_stop() {
 }
 
 uint32_t adc_setFrequency(uint32_t frequency) {
-    const int SYS_MHZ = 72;
-    const uint32_t CLOCKS = SYS_MHZ * 1000000;
+    const uint32_t CLOCKS = HAL_RCC_GetSysClockFreq();
+    const auto SYS_MHZ = CLOCKS / 1000000;
     uint32_t period = CLOCKS / frequency;
 
     uint16_t p1 = 0;
