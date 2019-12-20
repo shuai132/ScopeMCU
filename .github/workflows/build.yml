@@ -4,15 +4,11 @@ on: [push]
 
 jobs:
   Linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    env:
+      targetName: ScopeMCU
+
     steps:
-      - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
-
-      - name: submodule
-        run: git submodule update --init --recursive
-
       - name: Install Dependencies
         run: sudo apt-get install gcc-arm-none-eabi
 
@@ -23,5 +19,26 @@ jobs:
           sudo mv cmake-3.15.5-Linux-x86_64 /opt/cmake-3.15.5
           sudo ln -sf /opt/cmake-3.15.5/bin/* /usr/local/bin/
 
-      - name: cmake build
-        run: mkdir build && cd build && cmake .. && make
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Submodules
+        run: git submodule update --init --recursive
+
+      - name: CMake Build
+        run: |
+          mkdir build && cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          make
+          zip ${{ env.targetName }}.zip ${{ env.targetName }}.bin ${{ env.targetName }}.hex
+
+      - name: Make Release
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/${{ env.targetName }}.zip
+          asset_name: ${{ env.targetName }}.zip
+          tag: ${{ github.ref }}
+          overwrite: true
