@@ -4,4 +4,5 @@ cd .. && \
 cloc *.* \
 App/*.* \
 App/modules/log/*.* \
-App/modules/PacketProcessor/*.*
+App/modules/ScopeCore/*.* \
+App/modules/ScopeCore/modules/PacketProcessor/*.* \

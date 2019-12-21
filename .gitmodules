@@ -1,6 +1,6 @@
-[submodule "App/modules/PacketProcessor"]
-	path = App/modules/PacketProcessor
-	url = https://github.com/shuai132/PacketProcessor
 [submodule "App/modules/log"]
 	path = App/modules/log
 	url = https://github.com/shuai132/LOG.git
+[submodule "App/modules/ScopeCore"]
+	path = App/modules/ScopeCore
+	url = https://github.com/shuai132/ScopeCore.git

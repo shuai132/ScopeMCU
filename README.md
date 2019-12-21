@@ -8,7 +8,9 @@ MCU: STM32F103C8Tx
 
 需配合[ScopeGUI](https://github.com/shuai132/ScopeGUI)使用
 
-[截图和二进制文件](https://github.com/shuai132/ScopeGUI/wiki)
+[截图说明见wiki](https://github.com/shuai132/ScopeGUI/wiki)
+
+[最新版Releases](https://github.com/shuai132/ScopeMCU/releases)
 
 ## Introduction
 
@@ -24,7 +26,7 @@ MCU: STM32F103C8Tx
 * ADC数值已校准（使用内部基准电压）
 * 采样率无级可调 最高采样率1Msps
 * 采样深度可调 默认最大2048点
-* 内置自测信号（1kHz方波信）
+* 内置自测信号（1kHz方波）
 * 多种触发方式（自动、正常、单次）
 * FFT频谱分析（上位机实现）
 * USB CDC 高速数据传输
@@ -54,9 +56,10 @@ PA10 | USART1 RX 调试串口
 
 ## 移植
 
+
 设计上把可移植性作为重要目标，可以很方便地移植到其他单片机、Arduino、DSP等硬件。
 
-只需硬件提供指定功能实现函数即可，具体可参考[App/Scope.h](App/Scope.h)中public方法的注释或移植步骤。
+只需硬件提供指定功能实现函数即可，具体见[ScopeCore](https://github.com/shuai132/ScopeCore)中public方法的注释或移植步骤。
 
 注: 
 * 需要C++11支持，推荐使用arm-none-eabi编译器和cmake构建，已在Windows、macOS、Ubuntu下测试通过。
@@ -66,11 +69,14 @@ PA10 | USART1 RX 调试串口
 
 * 初始化scope
 ```cpp
-    auto& scope = Scope::getInstance();
-    scope.setVolLimits(0, 3300);
-    scope.setFsLimits(1, 10000);
-    scope.setMaxSn(2048);
-    scope.setMcuImpl(
+    // 在全局初始化
+    static ScopeMCU scopeMcu;
+    ...
+
+    scopeMcu.setVolLimits(0, 3300);
+    scopeMcu.setFsLimits(1, 10000);
+    scopeMcu.setMaxSn(2048);
+    scopeMcu.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
                         // 用串口发送数据
@@ -91,13 +97,14 @@ PA10 | USART1 RX 调试串口
 ```
 * 当收到串口数据
 ```cpp
-    Scope::getInstance().onRead(data, size);
+    scopeMcu.onRead(data, size);
 ```
 * 当一次ADC转换完成  
 ```cpp
-    Scope::getInstance().onADC(vol);
+    scopeMcu.onADC(vol);
 ```
-注：`startADC`之前不要触发`onADC`
+注：
+* `startADC`之前不要触发`onADC`
 
 ## DevelopTools
 

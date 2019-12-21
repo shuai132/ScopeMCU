@@ -4,10 +4,12 @@
 #include "md_pwm.h"
 #include "md_led.h"
 #include "md_usb.h"
-#include "Scope.h"
+#include "ScopeMCU.h"
 #include "log.h"
 
 using namespace scope;
+
+static ScopeMCU scopeMcu;
 
 void init(void) {
     usb_plugged();
@@ -21,11 +23,10 @@ void setup(void) {
     adc_init();
     pwm_init();
 
-    auto& scope = Scope::getInstance();
-    scope.setVolLimits(0, 3300);
-    scope.setFsLimits(1, 70000);
-    scope.setMaxSn(2048);
-    scope.setMcuImpl(
+    scopeMcu.setVolLimits(0, 3300);
+    scopeMcu.setFsLimits(1, 70000);
+    scopeMcu.setMaxSn(2048);
+    scopeMcu.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
                         usb_cdcSend(data, size);
@@ -43,17 +44,17 @@ void setup(void) {
 
 void loop(void) {
     HAL_Delay(500);
-    if (not Scope::getInstance().isSampling()) {
+    if (not scopeMcu.isSampling()) {
         led_toggle();
     }
 }
 
 void on_usb_cdc_data(uint8_t* data, size_t size) {
-    Scope::getInstance().onRead(data, size);
+    scopeMcu.onRead(data, size);
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-    Scope::getInstance().onADC(adc_getVolmV(0));
+    scopeMcu.onADC(adc_getVolmV(0));
 }
 
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {

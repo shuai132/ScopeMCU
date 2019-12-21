@@ -1,10 +1,8 @@
 set(TARGET_NAME app)
 
-# PacketProcessor
-option(packetprocessor_BUILD_EXAMPLE "build example" OFF)
-add_subdirectory(modules/PacketProcessor)
-link_libraries(packetprocessor)
-target_compile_definitions(packetprocessor PRIVATE NDEBUG)
+# ScopeCore
+add_subdirectory(modules/ScopeCore)
+link_libraries(ScopeCoreMCU)
 
-add_library(${TARGET_NAME} app.cpp md_adc.cpp md_pwm.cpp md_led.cpp md_usb.cpp Scope.cpp)
+add_library(${TARGET_NAME} app.cpp md_adc.cpp md_pwm.cpp md_led.cpp md_usb.cpp)
 target_include_directories(${TARGET_NAME} PUBLIC .)
