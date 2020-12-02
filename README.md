@@ -25,7 +25,7 @@ MCU: STM32F103C8Tx
 * Timer触发ADC+DMA 精确采样
 * ADC数值已校准（使用内部基准电压）
 * 采样率无级可调 最高采样率1Msps
-* 采样深度可调 默认最大2048点
+* 采样深度可调 当前6144(1024*6)点
 * 内置自测信号（1kHz方波）
 * 多种触发方式（自动、正常、单次）
 * FFT频谱分析（上位机实现）
@@ -70,12 +70,13 @@ PA10 | USART1 RX 调试串口
 * 初始化scope
 ```cpp
     // 在全局初始化
-    static ScopeMCU scopeMcu;
+    static const size_t MaxSn = 1024 * 6;   // 取决于RAM大小
+    static uint8_t Buffer[Message::CalcBytes(MaxSn)];
+    static ScopeMCU scopeMcu(MaxSn, Buffer);
     ...
 
     scopeMcu.setVolLimits(0, 3300);
     scopeMcu.setFsLimits(1, 10000);
-    scopeMcu.setMaxSn(2048);
     scopeMcu.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {

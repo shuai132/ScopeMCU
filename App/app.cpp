@@ -9,12 +9,18 @@
 
 using namespace scope;
 
-static ScopeMCU scopeMcu;
+static const size_t MaxSn = 4096;
+static uint8_t Buffer[Message::CalcBytes(MaxSn)];
+static ScopeMCU scopeMcu(MaxSn, Buffer);
 
 void init(void) {
     usb_plugged();
     std::set_new_handler([] {
-        FATAL("out of memory");
+        LOGW("out of memory");
+        for(;;){
+            led_toggle();
+            HAL_Delay(50);
+        }
     });
 }
 
@@ -25,7 +31,6 @@ void setup(void) {
 
     scopeMcu.setVolLimits(0, 3300);
     scopeMcu.setFsLimits(1, 70000);
-    scopeMcu.setMaxSn(2048);
     scopeMcu.setMcuImpl(
             {
                     .sendData = [](uint8_t* data, size_t size) {
