@@ -1,6 +1,6 @@
 #include "gpio.h"
-#include "usbd_cdc_if.h"
 #include "log.h"
+#include "usbd_cdc_if.h"
 
 /**
  * 软件复位后USB无法正常枚举 要模拟USB拔插
@@ -21,7 +21,7 @@ void usb_plugged() {
     // 先把PA12拉低再拉高 利用D+模拟USB的拔插动作
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
     HAL_Delay(10);
-    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_SET);
     HAL_Delay(10);
 }
 

@@ -1,6 +1,6 @@
 name: build
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   Linux:
@@ -19,12 +19,9 @@ jobs:
           sudo mv cmake-3.15.5-Linux-x86_64 /opt/cmake-3.15.5
           sudo ln -sf /opt/cmake-3.15.5/bin/* /usr/local/bin/
 
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: 1
-
-      - name: Submodules
-        run: git submodule update --init --recursive
+          submodules: recursive
 
       - name: CMake Build
         run: |

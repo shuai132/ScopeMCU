@@ -1,6 +1,6 @@
 [submodule "App/modules/log"]
 	path = App/modules/log
-	url = https://github.com/shuai132/LOG.git
+	url = git@github.com:shuai132/log.git
 [submodule "App/modules/ScopeCore"]
 	path = App/modules/ScopeCore
-	url = https://github.com/shuai132/ScopeCore.git
+	url = git@github.com:shuai132/ScopeCore.git

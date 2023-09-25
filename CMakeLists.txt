@@ -24,7 +24,7 @@ SET(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F103C8Tx_FLASH.ld)
 #SET(FPU_FLAGS "-mfloat-abi=soft")
 
 SET(COMMON_FLAGS
-    "-mcpu=cortex-m3 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
+        "-mcpu=cortex-m3 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
     -g -O2 -fno-common -fmessage-length=0 -specs=nosys.specs -specs=nano.specs")
 
 SET(CMAKE_CXX_FLAGS_INIT "${COMMON_FLAGS} -std=c++11")
@@ -45,14 +45,20 @@ add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
 
 # custom cmake
 # log
-add_definitions(-DLOG_LINE_END_CRLF -DLOG_FOR_MCU)
+add_definitions(
+        -DL_O_G_FOR_MCU
+        -DL_O_G_LINE_END_CRLF
+        -DL_O_G_DISABLE_THREAD_SAFE
+        -DL_O_G_DISABLE_THREAD_ID
+        -DL_O_G_DISABLE_DATE_TIME
+)
 include_directories(App/modules/log)
 # app
 add_subdirectory(App)
 target_link_libraries(${PROJECT_NAME}.elf app)
 
 set(CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map")
+        "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map")
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)

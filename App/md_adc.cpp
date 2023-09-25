@@ -1,15 +1,17 @@
-#include <cmath>
-#include "adc.h"
-#include "tim.h"
 #include "md_adc.h"
+
+#include <cmath>
+
+#include "adc.h"
 #include "log.h"
+#include "tim.h"
 
 volatile uint16_t ADCValue[CHANNEL_NUM];
 
 void adc_init() {
     // 自动校准
     if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK) {
-        FATAL();
+        LOGF();
     }
 }
 
@@ -17,16 +19,16 @@ void adc_start() {
     LOGD("adc_start");
     // start adc dma
     if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCValue, CHANNEL_NUM) != HAL_OK) {
-        FATAL();
+        LOGF();
     }
 
     if (HAL_TIM_Base_Init(&htim3) != HAL_OK) {
-        FATAL();
+        LOGF();
     }
 
     // start timer
     if (HAL_TIM_Base_Start_IT(&htim3) != HAL_OK) {
-        FATAL();
+        LOGF();
     }
 }
 
@@ -34,7 +36,7 @@ void adc_stop() {
     LOGD("adc_stop");
     // start timer
     if (HAL_TIM_Base_Stop_IT(&htim3) != HAL_OK) {
-        FATAL();
+        LOGF();
     }
 }
 
@@ -62,14 +64,14 @@ uint32_t adc_setFrequency(uint32_t frequency) {
         } while (--pm);
     }
     htim3.Init.Prescaler = p1 - 1;
-    htim3.Init.Period    = p2 - 1;
+    htim3.Init.Period = p2 - 1;
 
     if (HAL_TIM_Base_Init(&htim3) != HAL_OK) {
-        FATAL();
+        LOGF();
     }
 
     uint32_t realFs = CLOCKS / (p1 * p2);
-    LOGD("realFs: %ld, p1=%ld, p2=%ld", realFs, p1, p2);
+    LOGD("realFs: %ld, p1=%u, p2=%u", realFs, p1, p2);
     return realFs;
 }
 
